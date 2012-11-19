@@ -23,12 +23,12 @@ Ensuite il suffit de lancer le script `setup.sh` pour installer crosstool-ng.
 
 Et enfin le script `build.sh` construit toute la chaine de compilation croisée automatiquement!
 
-Il donne en premier un _menuconfig_ comme pour le noyau, il suffit de quitter pour lancer la compilation de la châine.
+Il donne en premier un _menuconfig_ comme pour le noyau, il suffit de quitter pour lancer la compilation de la chaine.
 
 En fois que tout est fini, ça peut prendre des heures, la chaine se situe dans __toolchains__ et dedans on y trouve un dossier __sysroot__ avec le système de fichier à mettre dans le raspberrypi.
 
 ## Crosstool-ng
-Si on veu bidouiller la configuration de la chaine:
+Si on veux bidouiller la configuration de la chaine:
 
 Crosstool-ng sera installé dans le dossier __install__, il faut donc l'ajouter à la variables __PATH__:
 
