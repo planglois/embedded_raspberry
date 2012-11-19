@@ -1,6 +1,6 @@
 #!/bin/sh
 
-mkdir -p install toolchains  tarballs build
+mkdir -p install toolchains build
 
 if [ ! -e "$HOME/embedded_raspberry/install/bin/ct-ng" ]
 then
