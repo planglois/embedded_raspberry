@@ -13,7 +13,7 @@ Il faut __absolument__ mettre en place le repo dans son dossier perso.
 
 Il faut mettre l'option `--recursive` pour automatiquement télécharger crosstool-ng. Ça revient à faire:
 
-    $ git clone --recursive git@82.235.99.234:embedded_raspberry.git
+    $ git clone git@82.235.99.234:embedded_raspberry.git
     $ git submodule init
     $ git submodule update
 
