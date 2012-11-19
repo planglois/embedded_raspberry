@@ -8,14 +8,14 @@ Une chaine de compilation contient un compilateur, éditeur de liens et tout ce 
 
 Il faut __absolument__ mettre en place le repo dans son dossier perso.
 
-    # cd ~
-    # git clone --recursive git@82.235.99.234:embedded_raspberry.git
+    $ cd ~
+    $ git clone --recursive git@82.235.99.234:embedded_raspberry.git
 
 Il faut mettre l'option `--recursive` pour automatiquement télécharger crosstool-ng. Ça revient à faire:
 
-    # git clone --recursive git@82.235.99.234:embedded_raspberry.git
-    # git submodule init
-    # git submodule update
+    $ git clone --recursive git@82.235.99.234:embedded_raspberry.git
+    $ git submodule init
+    $ git submodule update
 
 ## Installation
 
@@ -32,16 +32,16 @@ Si on veu bidouiller la configuration de la chaine:
 
 Crosstool-ng sera installé dans le dossier __install__, il faut donc l'ajouter à la variables __PATH__:
 
-    # export PATH=$PATH:$HOME/embedded_raspberry/install/bin
+    $ export PATH=$PATH:$HOME/embedded_raspberry/install/bin
 
 Ensuite la commande __ct-ng__ sera dispo. Pour l'utiliser il vaut mieux se placer dans un dossier à part, en l'occurence le dossier __build__. La configuration de la chaine se trouve dans le dossier __config__, il faut la copier dans le dossier __build__.
 
 Ensuite:
 
-    # ct-ng menuconfig
+    $ ct-ng menuconfig
 
 Pour éditer la config
 
-    # ct-ng build
+    $ ct-ng build
 
 Pour construire la chaine.
