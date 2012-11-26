@@ -1,3 +1,0 @@
-[submodule "tools/ct-ng"]
-	path = tools/ct-ng
-	url = git://github.com/crosstool-ng/crosstool-ng.git

@@ -1,13 +1,14 @@
 #!/bin/sh
+echo "checking crosstool-ng..."
 
-mkdir -p install toolchains build
+ct-ng version
 
-if [ ! -e "$HOME/embedded_raspberry/install/bin/ct-ng" ]
+if [ ! $? ]
 then
-  echo "Installing crosstool-ng."
-  cd $HOME/embedded_raspberry/tools/ct-ng
-  ./configure --prefix="$HOME/embedded_raspberry/install"
-  make
-  make install
-  make distclean
+  echo "you need to have crosstool-ng installed on your system."
+  exit
 fi
+
+echo "setting up project..."
+
+mkdir -p build rootfs
