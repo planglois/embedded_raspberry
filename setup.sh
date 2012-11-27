@@ -11,4 +11,4 @@ fi
 
 echo "setting up project..."
 
-mkdir -p build rootfs tarballs toolchains
+mkdir -p build rootfs tarballs toolchains images
