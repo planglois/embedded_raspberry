@@ -7,4 +7,4 @@ then
 fi;
 
 
-sudo mount -t ext3 -o loop $1 rootfs
+sudo mount -t ext3 -o loop $1 mnt
