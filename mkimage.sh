@@ -11,7 +11,7 @@ usage()
 
 if [ $0 != "./mkimage.sh" ]
 then
-  echo "$ERROR you need to run the script from it's current location."
+  echo "$ERROR you need to run this script from it's current location."
   usage
   exit
 fi
@@ -57,11 +57,11 @@ echo "=> installing ext3 filesystem..."
 yes | sudo mke2fs -t ext3 $1
 
 echo "=> mounting new empty image."
-sudo mount -t ext3 -o loop $1 mnt
+./mount.sh $1
 
-echo "=> copying root file system content..."
-sudo cp -pr rootfs/* mnt/
-
+echo "=> copying and backing up root file system content..."
+./backup.sh > /dev/null
+sudo cp -pr rootfs/* mnt
 sync
 
 echo "=> unmounting image."
