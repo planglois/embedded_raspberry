@@ -44,11 +44,9 @@ fi
 
 BLKSIZE=512
 
-for WORD in `du rootfs -s -B $BLKSIZE`
-do
-  SIZE=$WORD
-  break
-done
+du rootfs -s -B $BLKSIZE > size.tmp
+read SIZE DIR < size.tmp
+rm size.tmp
 
 echo "=> creating empty image of size $SIZE x $BLKSIZE..."
 dd if=/dev/zero of=$1 bs=$BLKSIZE count=$SIZE
