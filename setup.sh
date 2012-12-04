@@ -11,4 +11,4 @@ fi
 
 echo -e "\033[1m\033[32m====> \033[34msetting up project...\033[0m"
 
-mkdir -p build rootfs tarballs toolchains images mnt archives
+mkdir -p build rootfs/proc rootfs/sys rootfs/boot tarballs toolchains images mnt archives
