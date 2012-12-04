@@ -21,6 +21,11 @@ getdirsize()
   echo `du $1 -s -B $BLK_SIZE | grep -o "[0-9]\+"`
 }
 
+getfilesize()
+{
+  echo `ls -s --block-size=$BLK_SIZE $1 | grep -o "[0-9]\+"`
+}
+
 ######################################################################################################################################################
 # initial checkings
 ######################################################################################################################################################
@@ -84,7 +89,16 @@ fi
 
 export RFS_DIR="rootfs"
 export MNT_DIR="mnt"
+export IMAGE_TOOL_DIR="tools/mkimage"
 export FIRWARE_DIR="firmware/boot"
+export FIRWARE="$FIRWARE_DIR/COPYING.linux  \
+                $FIRWARE_DIR/LICENCE.broadcom \
+                $FIRWARE_DIR/bootcode.bin \
+                $FIRWARE_DIR/fixup.dat \
+                $FIRWARE_DIR/fixup_cd.dat \
+                $FIRWARE_DIR/start.elf  \
+                $FIRWARE_DIR/start_cd.elf"
+export LINUX_KERNEL="linux/arch/arm/boot/Image"
 export CONFIG_DIR="config/linux/boot"
 
 export BLK_SIZE=512
@@ -95,9 +109,34 @@ export OFFSET=4096
 
 
 export RFS_SIZE=`getdirsize $RFS_DIR`
-export FIRWARE_SIZE=`getdirsize firmware/boot`
+export FIRWARE_SIZE=0
+
+for FILE in $FIRWARE
+do
+  SIZE=`getfilesize $FILE`
+  FIRWARE_SIZE=`echo "$FIRWARE_SIZE + $SIZE" | bc`
+done
+
+BROADCOM_KERNEL_SIZE=`getfilesize $FIRWARE_DIR/kernel.img`
+BROADCOM__CUTDOWN_KERNEL_SIZE=`getfilesize $FIRWARE_DIR/kernel_cutdown.img`
+BROADCOM__EMERGENCY_KERNEL_SIZE=`getfilesize $FIRWARE_DIR/kernel_emergency.img`
+
+if [ -f $LINUX_KERNEL ]
+then
+  
+  CURRENT_DIR=$PWD
+  cd $IMAGE_TOOL_DIR
+  ./imagetool-uncompressed.py $CURRENT_DIR/$LINUX_KERNEL
+  cd $CURRENT_DIR
+  export LINUX_KERNEL=$IMAGE_TOOL_DIR/kernel.img
+  HOMEMADE_KERNEL_SIZE=`getfilesize $LINUX_KERNEL`
+  export KERNEL_SIZE=`echo "$HOMEMADE_KERNEL_SIZE + $BROADCOM_KERNEL_SIZE + $BROADCOM__CUTDOWN_KERNEL_SIZE + $BROADCOM__EMERGENCY_KERNEL_SIZE" | bc`
+else
+  export KERNEL_SIZE=`echo "$BROADCOM_KERNEL_SIZE + $BROADCOM__CUTDOWN_KERNEL_SIZE + $BROADCOM__EMERGENCY_KERNEL_SIZE" | bc`
+fi
+
 export CONFIG_SIZE=`getdirsize config/linux/boot`
-export BOOT_SIZE=`echo "$CONFIG_SIZE + $FIRWARE_SIZE + $OFFSET" | bc`
+export BOOT_SIZE=`echo "$CONFIG_SIZE + $FIRWARE_SIZE + $KERNEL_SIZE + $OFFSET" | bc`
 
 export FULL_SIZE=`echo "$RFS_SIZE + $BOOT_SIZE + $OFFSET" | bc`
 
@@ -149,7 +188,7 @@ message "creating first partition from sector $PART_BOOT_START to sector $PART_B
 message "setting up flags for the first partition"
 {
   echo t
-  echo 1
+  echo 
   echo c
   echo w
 } | fdisk -H $HEADS -C $CYLINDERS -S $SECTORS $LOOP_IMG > $REDIRECT 2>&1
@@ -185,8 +224,6 @@ message "creating second partition from sector $PART_RFS_START to sector $PART_R
 # setting up file systems and installing the files on the partitions
 ######################################################################################################################################################
 
-
-
 LOOP_IMG_BOOT=`losetup -f --show -o $PART_BOOT_START_B $IMG`
 LOOP+=" $LOOP_IMG_BOOT"
 
@@ -199,7 +236,11 @@ message "setting up file systems in FAT16 and ext2"
 
 mkfs.vfat -F 16 $LOOP_IMG_BOOT > $REDIRECT 2>&1
 
+fsck.vfat $LOOP_IMG_BOOT > $REDIRECT 2>&1
+
 mkfs.ext2 $LOOP_IMG_RFS > $REDIRECT 2>&1
+
+fsck.ext2 $LOOP_IMG_RFS > $REDIRECT 2>&1
 
 if [ ! `mountpoint $MNT_DIR -q; echo $?` ]
 then
@@ -211,8 +252,25 @@ message "mounting boot partition"
 mount -t vfat $LOOP_IMG_BOOT $MNT_DIR
 
 message "copying firware, linux kernel and its configuration"
-cp -r $FIRWARE_DIR/* $MNT_DIR
+
+for FILE in $FIRWARE
+do
+  cp $FILE $MNT_DIR
+done
+
+cp $FIRWARE_DIR/kernel.img $MNT_DIR/bc_kernel.img
+cp $FIRWARE_DIR/kernel_cutdown.img $MNT_DIR/bc_kernel_cutdown.img
+cp $FIRWARE_DIR/kernel_emergency.img $MNT_DIR/bc_kernel_emergency.img
+
+if [ -f $LINUX_KERNEL ]
+then
+  cp $LINUX_KERNEL $MNT_DIR
+else
+  mv $MNT_DIR/{bc_,}kernel.img
+fi
+
 cat $CONFIG_DIR/cmdline.txt | tee $MNT_DIR/cmdline.txt > $REDIRECT 2>&1
+cat $CONFIG_DIR/config.txt | tee $MNT_DIR/config.txt > $REDIRECT 2>&1
 
 sync
 umount $MNT_DIR
@@ -220,7 +278,7 @@ umount $MNT_DIR
 message "mounting root partition"
 mount -t ext2 $LOOP_IMG_RFS $MNT_DIR
 message "populating file system"
-cp -r $RFS_DIR/* $MNT_DIR
+cp -r -a $RFS_DIR/* $MNT_DIR
 sync
 umount $MNT_DIR
 
