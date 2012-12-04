@@ -58,7 +58,7 @@ fi
 
 if [ $0 != "./mkimage.sh" ]
 then
-  echo "$ERROR you need to run this script from it's current location."
+  echo "you need to run this script from it's current location."
   usage
   exit
 fi
