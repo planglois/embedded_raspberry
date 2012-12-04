@@ -6,7 +6,7 @@ Le but de ce projet est de contruire rapidement un système de fichier pour le R
 
 Téléchargez les souces de __crosstool-ng__, en dehors du répo.
 
-    $ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.16.0.tar.bz2
+    $ wget http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.17.0.tar.bz2
     $ tar xjf crosstool-ng-1.16.0.tar.bz2
     $ cd crosstool-ng-1.16.0
     $ ./configure --prefix=/usr
