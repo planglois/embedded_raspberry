@@ -1,0 +1,2 @@
+::sysinit:/etc/init.d/rcS
+ttyAMA0::askfirst:/bin/ash

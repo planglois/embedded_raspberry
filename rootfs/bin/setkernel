@@ -1,0 +1,21 @@
+#!/bin/ash
+
+export KERNELS=`ls /boot | grep img`
+
+export CONFIG=`cat /boot/config.txt | grep -v kernel`
+
+echo "==> choose a kernel between:"
+echo $KERNELS
+
+read KERNEL
+
+echo "==> you chose '$KERNEL', press enter to write it to 'config.txt'"
+
+read
+
+echo "kernel=$KERNEL" > /boot/config.txt
+echo $CONFIG >> /boot/config.txt
+
+
+echo "==> please check 'config.txt' before rebooting"
+cat /boot/config.txt

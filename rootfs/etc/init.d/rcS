@@ -1,0 +1,16 @@
+#!/bin/ash
+
+echo "/-------------------------------------------------------------------------------------------------------------------------------------------\\"
+echo "| 1. A robot may not injure a human being or, through inaction, allow a human being to come to harm.                                        |" 
+echo "| 2. A robot must obey the orders given to him by human beings, except where such orders would confilct with the First Law.                 |" 
+echo "| 3. A robot must protect its own existence as long as such protection does not conflict with the First or Second Laws.                     |"
+echo "| 4. A robot embedding a RaspberryPi micro-computer must know how to protect itself from various fresh fruit, including a fellow raspberry. |"
+echo "\\-------------------------------------------------------------------------------------------------------------------------------------------/"
+
+mount -t ext2 -o rw,remount /dev/mmcblk0p0 /
+
+mount -t vfat /dev/mmcblk0p1 /boot
+
+mount -t proc proc /proc
+
+mount -t sysfs sysfs /sys
