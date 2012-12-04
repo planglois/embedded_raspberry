@@ -1,0 +1,2 @@
+kernel=bc_kernel.img
+gpu_mem=64
