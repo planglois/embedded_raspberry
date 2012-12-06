@@ -6,3 +6,4 @@
 /archives
 /rootfs_extras
 /kernels
+/tools/mkimage/kernel.img
