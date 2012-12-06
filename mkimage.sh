@@ -88,6 +88,7 @@ else
 fi
 
 export RFS_DIR="rootfs"
+export RFS_EXTRAS_DIR="rootfs_extras"
 export MNT_DIR="mnt"
 export IMAGE_TOOL_DIR="tools/mkimage"
 export FIRWARE_DIR="firmware/boot"
@@ -98,17 +99,21 @@ export FIRWARE="$FIRWARE_DIR/COPYING.linux  \
                 $FIRWARE_DIR/fixup_cd.dat \
                 $FIRWARE_DIR/start.elf  \
                 $FIRWARE_DIR/start_cd.elf"
-export LINUX_KERNEL="linux/arch/arm/boot/Image"
+export LINUX_KERNEL="kernels/Image"
 export CONFIG_DIR="config/linux/boot"
 
 export BLK_SIZE=512
 
 export IMG=$1
 export LOOP
-export OFFSET=4096
+export OFFSET=8192
 
 
-export RFS_SIZE=`getdirsize $RFS_DIR`
+RFS_EXTRAS_SIZE=`getdirsize $RFS_EXTRAS_DIR`
+
+RFS_CUSTOM_SIZE=`getdirsize $RFS_DIR`
+export RFS_SIZE=`echo "$RFS_EXTRAS_SIZE + $RFS_CUSTOM_SIZE" | bc`
+
 export FIRWARE_SIZE=0
 
 for FILE in $FIRWARE
@@ -123,7 +128,7 @@ BROADCOM__EMERGENCY_KERNEL_SIZE=`getfilesize $FIRWARE_DIR/kernel_emergency.img`
 
 if [ -f $LINUX_KERNEL ]
 then
-  
+  message "using custom kernel." 
   CURRENT_DIR=$PWD
   cd $IMAGE_TOOL_DIR
   ./imagetool-uncompressed.py $CURRENT_DIR/$LINUX_KERNEL
@@ -132,6 +137,7 @@ then
   HOMEMADE_KERNEL_SIZE=`getfilesize $LINUX_KERNEL`
   export KERNEL_SIZE=`echo "$HOMEMADE_KERNEL_SIZE + $BROADCOM_KERNEL_SIZE + $BROADCOM__CUTDOWN_KERNEL_SIZE + $BROADCOM__EMERGENCY_KERNEL_SIZE" | bc`
 else
+  message "using broadcom's precompiled kernel."
   export KERNEL_SIZE=`echo "$BROADCOM_KERNEL_SIZE + $BROADCOM__CUTDOWN_KERNEL_SIZE + $BROADCOM__EMERGENCY_KERNEL_SIZE" | bc`
 fi
 
@@ -279,6 +285,7 @@ message "mounting root partition"
 mount -t ext2 $LOOP_IMG_RFS $MNT_DIR
 message "populating file system"
 cp -r -a $RFS_DIR/* $MNT_DIR
+cp -r -a $RFS_EXTRAS_DIR/* $MNT_DIR
 sync
 umount $MNT_DIR
 

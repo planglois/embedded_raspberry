@@ -4,9 +4,5 @@
 /images
 /mnt
 /archives
-/rootfs
-
-!/rootfs/etc/inittab
-!/rootfs/etc/init.d
-!/rootfs/dev
-!/rootfs/bin/setkernel
+/rootfs_extras
+/kernels
